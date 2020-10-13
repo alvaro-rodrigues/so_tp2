@@ -95,7 +95,7 @@ sys_set_prio(void)
 {
   int priority;
 
-  if (argint(0, &priority) < 0 || argint(0, &priority) > 3)
+  if (argint(0, &priority) < 0 || argint(0, &priority) > 2)
     return -1;
   return set_prio(priority);
 }

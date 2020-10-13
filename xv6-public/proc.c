@@ -333,7 +333,7 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for(int i = 1; i <= 3; i++){
+    for(int i = 2; i >= 0; i--){
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
         if(p->state != RUNNABLE || p->priority != i)
           continue;
@@ -540,7 +540,7 @@ procdump(void)
 int
 set_prio(int priority)
 {
-  if (priority < 1 || priority > 3)
+  if (priority < 0 || priority > 2)
     return -1;
 
   struct proc *curr_proc = myproc();

@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
                 sum_s_cpu_rutime += rutime;
                 sum_s_cpu_retime += retime;
                 sum_s_cpu_stime += stime;
-            } else {
+            } else if (process_type == 2) {
                 sum_io_b_rutime += rutime;
                 sum_io_b_retime += retime;
                 sum_io_b_stime += stime;

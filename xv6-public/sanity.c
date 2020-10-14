@@ -12,7 +12,7 @@ void cpu_bound() {
 void short_cpu() {
     for (int i = 0; i < 100; i++) {
         for (int j = 0; j < 1000000; j++) {
-            if ((j+1) % 100 == 0)
+            if ((j+1) % 10000 == 0)
                 yield();
             asm("nop");
         }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
             n_cpu_b_proc++;
         } else if (process_type == 1) {
             n_s_cpu_proc++;
-        } else {
+        } else if (process_type == 2) {
             n_io_b_proc++;
         }
 

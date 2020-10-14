@@ -25,6 +25,7 @@ int sleep(int);
 int uptime(void);
 int set_prio(int);
 void yield(void);
+int wait2(int*, int*, int*);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -89,6 +89,10 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->priority = 2;
+  p->ctime = ticks;
+  p->retime = 0;
+  p->rutime = 0;
+  p->stime = 0;
 
   release(&ptable.lock);
 
@@ -551,4 +555,34 @@ set_prio(int priority)
     curr_proc->priority = priority;
 
   return 0;
+}
+
+// Update process stats and priority
+void 
+update_proc(void)
+{
+  struct proc *p;
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->priority == 0 && p->retime > T0TO1){
+      p->priority = 1;
+    } else if(p->priority == 1 && p->retime > T1TO2){
+      p->priority = 2;
+    }
+    switch(p->state)
+    {
+    case SLEEPING:
+      p->stime++;
+      break;
+    case RUNNING:
+      p->rutime++;
+      break;
+    case RUNNABLE:
+      p->retime++;
+      break;
+    default:
+      break;
+    }
+  }
+  release(&ptable.lock);
 }

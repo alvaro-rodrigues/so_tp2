@@ -331,9 +331,11 @@ scheduler(void)
   struct cpu *c = mycpu();
   c->proc = 0;
 
-  int proc_index2 = 0;
-  int proc_index1 = 0;
-  int proc_index0 = 0;
+  // Initializing next proc for all priorities as first proc.
+  acquire(&ptable.lock);
+  p = ptable.proc;
+  struct proc *next_proc[3] = {p, p, p};
+  release(&ptable.lock);
   
   for(;;){
     // Enable interrupts on this processor.
@@ -344,24 +346,13 @@ scheduler(void)
     acquire(&ptable.lock);
     int found_proc = 0;
     int seek_prio = 2;
-    int proc_index;
 
     while(!found_proc){
       
-      int counter = 0;
-
-      switch(seek_prio)
-      {
-      case 0:
-        proc_index = proc_index0;
-      case 1:
-        proc_index = proc_index1;
-      case 2:
-        proc_index = proc_index2;
-      }
+      // p is the next proc for a certain priority.
+      p = next_proc[seek_prio];
       
-      while(counter < NPROC){
-        p = &ptable.proc[proc_index % NPROC];
+      while(1){
         if(p->state == RUNNABLE && p->priority == seek_prio){
 
           // Switch to chosen process.  It is the process's job
@@ -383,21 +374,27 @@ scheduler(void)
           // Restart search for higher priority process
           found_proc = 1;
 
-          switch(seek_prio)
-          {
-          case 0:
-            proc_index0 = proc_index + 1;
-          case 1:
-            proc_index1 = proc_index + 1;
-          case 2:
-            proc_index2 = proc_index + 1;
-          }
+          // next_proc will be the switched process++.
+          // If condition guarantees circularity in the table.
+          if(p == &ptable.proc[NPROC-1])
+            next_proc[seek_prio] = ptable.proc;
+          else
+            next_proc[seek_prio] = ++p;
 
           break;
+
         }
 
-        proc_index++;
-        counter++;
+        // Iterating over the table.
+        // If condition guarantees circularity in the table. 
+        if(p == &ptable.proc[NPROC-1])
+          p = ptable.proc;
+        else
+          p++;
+
+        // Complete loop on the table.
+        if(p == next_proc[seek_prio])
+          break;
 
       }
       // Did not find any runnable process.
@@ -617,9 +614,9 @@ update_proc(void)
   acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->priority == 0 && p->retime > T0TO1){
-      p->priority = 1;
+      //p->priority = 1;
     } else if(p->priority == 1 && p->retime > T1TO2){
-      p->priority = 2;
+      //p->priority = 2;
     }
     switch(p->state)
     {

@@ -112,13 +112,12 @@ int main(int argc, char *argv[]) {
             int retime = 0;
             int rutime = 0;
             int stime = 0;
-            int prio = 0;
             
-            pid = wait2(&retime, &rutime, &stime, &prio);
+            pid = wait2(&retime, &rutime, &stime);
             int process_type = (pid - 4) % 3;
 
-            printf(1, "PID: %d, Type: %s, Running: %d, Ready: %d, Sleeping: %d, Turnaround: %d, Priority: %d\n", 
-                pid, process_types_str[process_type], rutime, retime, stime, retime + rutime + stime, prio);
+            printf(1, "PID: %d, Type: %s, Running: %d, Ready: %d, Sleeping: %d, Turnaround: %d\n", 
+                pid, process_types_str[process_type], rutime, retime, stime, retime + rutime + stime);
 
             if (process_type == 0) {
                 n_cpu_b_proc++;

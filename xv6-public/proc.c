@@ -614,9 +614,9 @@ update_proc(void)
   acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->priority == 0 && p->retime > T0TO1){
-      //p->priority = 1;
+      p->priority = 1;
     } else if(p->priority == 1 && p->retime > T1TO2){
-      //p->priority = 2;
+      p->priority = 2;
     }
     switch(p->state)
     {
@@ -637,7 +637,7 @@ update_proc(void)
 }
 
 int 
-wait2(int *retime, int *rutime, int *stime, int *prio)
+wait2(int *retime, int *rutime, int *stime)
 {
   struct proc *p;
   int havekids, pid;
@@ -654,7 +654,6 @@ wait2(int *retime, int *rutime, int *stime, int *prio)
         *retime = p->retime;
         *rutime = p->rutime;
         *stime = p->stime;
-        *prio = p->priority;
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;

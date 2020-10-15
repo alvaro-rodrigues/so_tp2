@@ -640,7 +640,7 @@ update_proc(void)
 }
 
 int 
-wait2(int *retime, int *rutime, int *stime)
+wait2(int *retime, int *rutime, int *stime, int *prio)
 {
   struct proc *p;
   int havekids, pid;
@@ -657,6 +657,7 @@ wait2(int *retime, int *rutime, int *stime)
         *retime = p->retime;
         *rutime = p->rutime;
         *stime = p->stime;
+        *prio = p->priority;
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;

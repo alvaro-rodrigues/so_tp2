@@ -110,7 +110,7 @@ sys_yield(void)
 int
 sys_wait2(void) 
 {
-  int *retime, *rutime, *stime;
+  int *retime, *rutime, *stime, *prio;
   
   if (argptr(0, (void*)&retime, sizeof(retime)) < 0)
     return -1;
@@ -118,5 +118,7 @@ sys_wait2(void)
     return -1;
   if (argptr(2, (void*)&stime, sizeof(stime)) < 0)
     return -1;
-  return wait2(retime, rutime, stime);
+  if (argptr(3, (void*)&prio, sizeof(prio)) < 0)
+    return -1;
+  return wait2(retime, rutime, stime, prio);
 }

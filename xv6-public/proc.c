@@ -330,6 +330,12 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
+
+  // Initializing next proc for all priorities as first proc.
+  acquire(&ptable.lock);
+  p = ptable.proc;
+  struct proc *next_proc[3] = {p, p, p};
+  release(&ptable.lock);
   
   for(;;){
     // Enable interrupts on this processor.
@@ -342,7 +348,11 @@ scheduler(void)
     int seek_prio = 2;
 
     while(!found_proc){
-      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      
+      // p is the next proc for a certain priority.
+      p = next_proc[seek_prio];
+      
+      while(1){
         if(p->state == RUNNABLE && p->priority == seek_prio){
 
           // Switch to chosen process.  It is the process's job
@@ -363,8 +373,29 @@ scheduler(void)
           // Breaking the loop over process table.
           // Restart search for higher priority process
           found_proc = 1;
+
+          // next_proc will be the switched process++.
+          // If condition guarantees circularity in the table.
+          if(p == &ptable.proc[NPROC-1])
+            next_proc[seek_prio] = ptable.proc;
+          else
+            next_proc[seek_prio] = ++p;
+
           break;
-        }  
+
+        }
+
+        // Iterating over the table.
+        // If condition guarantees circularity in the table. 
+        if(p == &ptable.proc[NPROC-1])
+          p = ptable.proc;
+        else
+          p++;
+
+        // Complete loop on the table.
+        if(p == next_proc[seek_prio])
+          break;
+
       }
       // Did not find any runnable process.
       if(seek_prio == 0)

@@ -13,5 +13,5 @@
 #define FSSIZE       1000  // size of file system in blocks
 #define INTERV        5  // preemption interval
 #define T0TO1 200
-#define T1TO2 400
+#define T1TO2 600
 
